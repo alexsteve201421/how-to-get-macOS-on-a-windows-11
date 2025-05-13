@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install macOS Sequoia in VMware on Windows</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+    }
+    .step {
+      background: #e8f0fe;
+      border-left: 4px solid #4285f4;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+    }
+    a {
+      color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Install macOS Sequoia on Windows Using VMware</h1>
+  <p>This step-by-step guide will show you how to install macOS Sequoia (macOS 15 beta) in a VMware virtual machine on a Windows PC — even if you’ve never done anything like this before.</p>
+
+  <h2>What You'll Need</h2>
+  <ul>
+    <li><strong>VMware Workstation Player</strong> (free for personal use)</li>
+    <li><strong>macOS ISO</strong> (created or prebuilt)</li>
+    <li><strong>OpenCore + macOS VMDK (prebuilt)</strong></li>
+    <li><strong>GenSMBIOS</strong> to enable iCloud</li>
+    <li><strong>ProperTree</strong> to edit config.plist</li>
+  </ul>
+
+  <h2>Step 1: Create a Broadcom Account and Download VMware</h2>
+  <div class="step">
+    <ol>
+      <li>Go to <a href="https://customerconnect.vmware.com/en/group/vmware/evalcenter">customerconnect.vmware.com</a></li>
+      <li>Click “Create an Account” (top-right)</li>
+      <li>Fill out the form (you don’t need a company name)</li>
+      <li>Once registered, log in and download <strong>VMware Workstation Player</strong></li>
+    </ol>
+    <p><strong>Download Link:</strong> <a href="https://customerconnect.vmware.com/en/downloads/details?downloadGroup=PLAYER-1703&productId=1039">VMware Workstation Player</a></p>
+  </div>
+
+  <h2>Step 2: Download macOS Sequoia ISO (Two Options)</h2>
+  <h3>Option A: Use a Prebuilt ISO</h3>
+  <div class="step">
+    <p>Visit <a href="https://techrechard.com">Techrechard.com</a> and search for "macOS Sequoia ISO"</p>
+    <p>Example Link: <a href="https://techrechard.com/how-to-download-macos-sequoia-iso-for-virtualbox-and-vmware/">Download ISO</a></p>
+  </div>
+
+  <h3>Option B: Make Your Own ISO (Advanced)</h3>
+  <div class="step">
+    <ol>
+      <li>Download <a href="https://github.com/corpnewt/gibMacOS">gibMacOS</a></li>
+      <li>Run <code>gibMacOS.bat</code> and choose macOS 15 beta</li>
+      <li>Use <code>BuildmacOSInstallApp</code> to convert it</li>
+      <li>Convert the app to ISO using <a href="https://www.crystalidea.com/anytoiso">AnyToISO</a></li>
+    </ol>
+  </div>
+
+  <h2>Step 3: Get OpenCore + macOS VMDK</h2>
+  <div class="step">
+    <p>Download prebuilt virtual disks from OC4VM:</p>
+    <ul>
+      <li><a href="https://github.com/thenickdude/oc4vm">OC4VM GitHub (OpenCore for VMware)</a></li>
+      <li>Use <code>opencore.vmdk</code> + <code>macos.vmdk</code></li>
+    </ul>
+  </div>
+
+  <h2>Step 4: Build Your Virtual Machine</h2>
+  <div class="step">
+    <ol>
+      <li>Create a new VM in VMware Workstation Player</li>
+      <li>Choose "I will install the OS later"</li>
+      <li>Guest OS: macOS X, version: Other 64-bit</li>
+      <li>Remove the default hard disk</li>
+      <li>Add existing hard disks:
+        <ul>
+          <li><code>opencore.vmdk</code></li>
+          <li><code>macos.vmdk</code></li>
+        </ul>
+      </li>
+      <li>Add CD/DVD drive → ISO file → <code>macOS Sequoia.iso</code></li>
+      <li>Ensure OpenCore is first in the boot order</li>
+    </ol>
+  </div>
+
+  <h2>Step 5: Boot and Install macOS</h2>
+  <div class="step">
+    <p>When OpenCore appears, choose "Install macOS Sequoia"</p>
+    <ol>
+      <li>In Disk Utility, erase <strong>macos.vmdk</strong> to APFS</li>
+      <li>Return to installer and install macOS onto the disk</li>
+    </ol>
+  </div>
+
+  <h2>Step 6: Enable iCloud and Apple ID</h2>
+  <div class="step">
+    <ol>
+      <li>Download <a href="https://github.com/corpnewt/GenSMBIOS">GenSMBIOS</a></li>
+      <li>Download <a href="https://github.com/corpnewt/ProperTree">ProperTree</a></li>
+      <li>Run GenSMBIOS and select your <code>config.plist</code></li>
+      <li>Generate SMBIOS for model <code>iMacPro1,1</code></li>
+      <li>Copy values to your OpenCore <code>config.plist</code> using ProperTree:</li>
+      <ul>
+        <li>SystemSerialNumber</li>
+        <li>MLB</li>
+        <li>SystemUUID</li>
+        <li>ROM</li>
+      </ul>
+      <li>Save the config and reboot</li>
+      <li>Apple ID should now work at login or in Settings</li>
+    </ol>
+  </div>
+
+  <h2>Need Help?</h2>
+  <p>Leave a comment or open a GitHub issue on the <a href="https://github.com/thenickdude/oc4vm">OC4VM repo</a>.</p>
+
+</body>
+</html>
